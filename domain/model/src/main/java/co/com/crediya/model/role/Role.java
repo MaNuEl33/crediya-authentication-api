@@ -1,4 +1,4 @@
-package co.com.crediya.model.rol;
+package co.com.crediya.model.role;
 import lombok.Builder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Rol {
+public class Role {
     private Long id;
     private String name;
     private String description;
