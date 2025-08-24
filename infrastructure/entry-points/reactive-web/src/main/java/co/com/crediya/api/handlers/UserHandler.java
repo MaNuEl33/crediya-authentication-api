@@ -1,0 +1,34 @@
+package co.com.crediya.api.handlers;
+
+import co.com.crediya.api.dtos.RegisterUserRequestDto;
+import co.com.crediya.api.helpers.ValidatorHelper;
+import co.com.crediya.api.mappers.UserDtoMapper;
+import co.com.crediya.usecase.user.UserUseCase;
+import jakarta.validation.Validator;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Mono;
+
+@Component
+@RequiredArgsConstructor
+public class UserHandler {
+
+    private final UserUseCase useCase;
+    private final UserDtoMapper dtoMapper;
+    private final Validator validator;
+
+    public Mono<ServerResponse> listenRegisterUser(ServerRequest serverRequest) {
+        return serverRequest.bodyToMono(RegisterUserRequestDto.class)
+                .transform(requestBody -> ValidatorHelper.validateObject(requestBody, validator))
+                .map(this.dtoMapper::toUserModel)
+                .flatMap(this.useCase::registerUser)
+                .map(this.dtoMapper::toRegisterUserResponseDto)
+                .flatMap(u -> ServerResponse.status(HttpStatus.CREATED)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(u));
+    }
+}
