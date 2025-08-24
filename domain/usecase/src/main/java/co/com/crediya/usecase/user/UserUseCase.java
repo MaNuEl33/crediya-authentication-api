@@ -51,7 +51,9 @@ public class UserUseCase {
                         "The base salary range of the user must be between %s and %s."
                                 .formatted(MIN_BASE_SALARY, MAX_BASE_SALARY))))
                 .filter(u -> Objects.nonNull(u.getRole()))
-                .switchIfEmpty(Mono.error(new UserInvalidDataException("The role of the user is required.")));
+                .switchIfEmpty(Mono.error(new UserInvalidDataException("The role of the user is required.")))
+                .filter(u -> Objects.nonNull(u.getRole().getId()))
+                .switchIfEmpty(Mono.error(new UserInvalidDataException("The id role of the user is required.")));
     }
 
     private Mono<User> validateExistingRole(User user) {
