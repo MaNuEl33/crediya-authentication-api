@@ -14,6 +14,7 @@ spring:
     include: null
   jackson:
     default-property-inclusion: non_null
+    property-naming-strategy: SNAKE_CASE
 
 adapters:
   r2dbc:
