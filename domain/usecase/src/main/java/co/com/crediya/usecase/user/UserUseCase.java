@@ -64,7 +64,7 @@ public class UserUseCase {
 
     private Mono<User> validateUniqueEmail(User user) {
         return this.userRepository.existsByEmail(user.getEmail())
-                .flatMap(exists -> exists
+                .flatMap(exists -> Boolean.TRUE.equals(exists)
                         ? Mono.error(new UserDuplicateEmailException("The email of the user is already exists."))
                         : Mono.just(user)
                 );
