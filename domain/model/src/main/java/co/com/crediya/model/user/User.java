@@ -1,9 +1,6 @@
 package co.com.crediya.model.user;
 import co.com.crediya.model.role.Role;
-import lombok.Builder;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -11,6 +8,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @AllArgsConstructor
+@EqualsAndHashCode
 @Builder(toBuilder = true)
 public class User {
     private Long id;

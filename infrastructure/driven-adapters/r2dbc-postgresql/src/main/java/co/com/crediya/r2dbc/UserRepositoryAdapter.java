@@ -28,7 +28,7 @@ public class UserRepositoryAdapter implements UserRepository {
     }
 
     @Override
-    public Mono<Boolean> existsByEmail(String email) {
+    public Mono<Boolean> validateUniqueEmail(String email) {
         return this.reactiveRepository.existsByEmail(email)
                 .doFirst(() -> log.info("Validating whether the email is being used by another user."))
                 .doOnSuccess(u -> log.info("The validation was successful."))

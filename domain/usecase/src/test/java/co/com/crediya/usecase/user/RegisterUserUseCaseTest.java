@@ -60,7 +60,7 @@ class RegisterUserUseCaseTest {
         Mockito.when(this.roleRepository.findById(Mockito.anyLong()))
                 .thenReturn(Mono.just(Role.builder().id(1L).build()));
 
-        Mockito.when(this.userRepository.existsByEmail(Mockito.anyString()))
+        Mockito.when(this.userRepository.validateUniqueEmail(Mockito.anyString()))
                 .thenReturn(Mono.just(false));
 
         Mockito.when(this.userRepository.saveUser(Mockito.any(User.class)))
@@ -71,7 +71,7 @@ class RegisterUserUseCaseTest {
                 .verifyComplete();
 
         Mockito.verify(this.roleRepository).findById(1L);
-        Mockito.verify(this.userRepository).existsByEmail("manuelharo1994@gmail.com");
+        Mockito.verify(this.userRepository).validateUniqueEmail("manuelharo1994@gmail.com");
         Mockito.verify(this.userRepository).saveUser(user);
 
         Mockito.verifyNoMoreInteractions(this.roleRepository, this.userRepository);
@@ -277,14 +277,14 @@ class RegisterUserUseCaseTest {
         Mockito.when(this.roleRepository.findById(Mockito.anyLong()))
                 .thenReturn(Mono.just(Role.builder().id(1L).build()));
 
-        Mockito.when(this.userRepository.existsByEmail(Mockito.anyString()))
+        Mockito.when(this.userRepository.validateUniqueEmail(Mockito.anyString()))
                 .thenReturn(Mono.just(true));
 
         StepVerifier.create(this.useCase.registerUser(user))
                 .verifyError(UserDuplicateEmailException.class);
 
         Mockito.verify(this.roleRepository).findById(1L);
-        Mockito.verify(this.userRepository).existsByEmail("manuelharo1994@gmail.com");
+        Mockito.verify(this.userRepository).validateUniqueEmail("manuelharo1994@gmail.com");
 
         Mockito.verifyNoMoreInteractions(this.roleRepository, this.userRepository);
     }

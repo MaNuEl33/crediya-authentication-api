@@ -1,14 +1,15 @@
 package co.com.crediya.r2dbc.config;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
-
+@ExtendWith(MockitoExtension.class)
 class PostgreSQLConnectionPoolTest {
 
     @InjectMocks
@@ -20,18 +21,16 @@ class PostgreSQLConnectionPoolTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-
-        when(properties.host()).thenReturn("localhost");
-        when(properties.port()).thenReturn(5432);
-        when(properties.database()).thenReturn("dbName");
-        when(properties.schema()).thenReturn("schema");
-        when(properties.username()).thenReturn("username");
-        when(properties.password()).thenReturn("password");
+        Mockito.when(this.properties.host()).thenReturn("localhost");
+        Mockito.when(this.properties.port()).thenReturn(5432);
+        Mockito.when(this.properties.database()).thenReturn("dbName");
+        Mockito.when(this.properties.schema()).thenReturn("schema");
+        Mockito.when(this.properties.username()).thenReturn("username");
+        Mockito.when(this.properties.password()).thenReturn("password");
     }
 
     @Test
     void getConnectionConfigSuccess() {
-        assertNotNull(connectionPool.getConnectionConfig(properties));
+        Assertions.assertNotNull(this.connectionPool.getConnectionConfig(this.properties));
     }
 }
