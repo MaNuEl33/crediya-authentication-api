@@ -5,6 +5,7 @@ import co.com.crediya.api.exceptions.ValidationException;
 import co.com.crediya.usecase.user.exceptions.RoleNotFoundException;
 import co.com.crediya.usecase.user.exceptions.UserDuplicateEmailException;
 import co.com.crediya.usecase.user.exceptions.UserInvalidDataException;
+import jakarta.validation.ConstraintViolation;
 import lombok.experimental.UtilityClass;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,8 +31,8 @@ public class GlobalErrorHandler {
         final var errorResponse = new ErrorResponseDto(
                 HttpStatus.BAD_REQUEST.value(),
                 e.getViolations().stream()
-                        .map(v -> v.getPropertyPath() + " " + v.getMessage())
-                        .collect(Collectors.joining(", "))
+                        .map(ConstraintViolation::getMessage)
+                        .collect(Collectors.joining(" "))
         );
 
         return ServerResponse.badRequest()
