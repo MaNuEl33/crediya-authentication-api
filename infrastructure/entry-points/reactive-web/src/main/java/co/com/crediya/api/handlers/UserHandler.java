@@ -3,7 +3,7 @@ package co.com.crediya.api.handlers;
 import co.com.crediya.api.dtos.RegisterUserRequestDto;
 import co.com.crediya.api.helpers.ValidatorHelper;
 import co.com.crediya.api.mappers.UserDtoMapper;
-import co.com.crediya.usecase.user.UserUseCase;
+import co.com.crediya.usecase.user.RegisterUserUseCase;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono;
 @Log4j2
 public class UserHandler {
 
-    private final UserUseCase useCase;
+    private final RegisterUserUseCase useCase;
     private final UserDtoMapper dtoMapper;
     private final Validator validator;
 

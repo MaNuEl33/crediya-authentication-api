@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 @RequiredArgsConstructor
-public class UserUseCase {
+public class RegisterUserUseCase {
 
     private static final BigDecimal MIN_BASE_SALARY = BigDecimal.ZERO;
     private static final BigDecimal MAX_BASE_SALARY = BigDecimal.valueOf(15000000);
