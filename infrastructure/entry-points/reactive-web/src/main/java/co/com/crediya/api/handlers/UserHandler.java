@@ -6,6 +6,7 @@ import co.com.crediya.api.mappers.UserDtoMapper;
 import co.com.crediya.usecase.user.UserUseCase;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
+@Log4j2
 public class UserHandler {
 
     private final UserUseCase useCase;
@@ -29,6 +31,9 @@ public class UserHandler {
                 .map(this.dtoMapper::toRegisterUserResponseDto)
                 .flatMap(u -> ServerResponse.status(HttpStatus.CREATED)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(u));
+                        .bodyValue(u))
+                .doFirst(() -> log.info("New request to register a user."))
+                .doOnSuccess(r -> log.info("The user registration request has been successfully"))
+                .doOnError(err -> log.error("The user registration request has been failed: {}", err.getMessage(), err));
     }
 }
