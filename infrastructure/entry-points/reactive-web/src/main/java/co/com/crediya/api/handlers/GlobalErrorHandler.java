@@ -27,12 +27,12 @@ public class GlobalErrorHandler {
     }
 
     private static Mono<ServerResponse> handleValidationException(ValidationException e) {
-        final var errorResponse = ErrorResponseDto.builder()
-                .status(HttpStatus.BAD_REQUEST.value())
-                .message(e.getViolations().stream()
+        final var errorResponse = new ErrorResponseDto(
+                HttpStatus.BAD_REQUEST.value(),
+                e.getViolations().stream()
                         .map(v -> v.getPropertyPath() + " " + v.getMessage())
                         .collect(Collectors.joining(", "))
-                ).build();
+        );
 
         return ServerResponse.badRequest()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -40,10 +40,7 @@ public class GlobalErrorHandler {
     }
 
     private static Mono<ServerResponse> handleUserInvalidDataException(UserInvalidDataException e) {
-        final var errorResponse = ErrorResponseDto.builder()
-                .status(HttpStatus.BAD_REQUEST.value())
-                .message(e.getMessage())
-                .build();
+        final var errorResponse = new ErrorResponseDto(HttpStatus.BAD_REQUEST.value(), e.getMessage());
 
         return ServerResponse.badRequest()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -51,10 +48,7 @@ public class GlobalErrorHandler {
     }
 
     private static Mono<ServerResponse> handleRoleNotFoundException(RoleNotFoundException e) {
-        final var errorResponse = ErrorResponseDto.builder()
-                .status(HttpStatus.CONFLICT.value())
-                .message(e.getMessage())
-                .build();
+        final var errorResponse = new ErrorResponseDto(HttpStatus.CONFLICT.value(), e.getMessage());
 
         return ServerResponse.status(HttpStatus.CONFLICT)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -62,10 +56,7 @@ public class GlobalErrorHandler {
     }
 
     private static Mono<ServerResponse> handleUserDuplicateEmailException(UserDuplicateEmailException e) {
-        final var errorResponse = ErrorResponseDto.builder()
-                .status(HttpStatus.CONFLICT.value())
-                .message(e.getMessage())
-                .build();
+        final var errorResponse = new ErrorResponseDto(HttpStatus.CONFLICT.value(), e.getMessage());
 
         return ServerResponse.status(HttpStatus.CONFLICT)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -73,10 +64,8 @@ public class GlobalErrorHandler {
     }
 
     private static Mono<ServerResponse> handleUnexpectedException(Exception e) {
-        final var errorResponse = ErrorResponseDto.builder()
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .message(e.getMessage())
-                .build();
+        final var errorResponse = new ErrorResponseDto(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                e.getMessage());
 
         return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .contentType(MediaType.APPLICATION_JSON)
