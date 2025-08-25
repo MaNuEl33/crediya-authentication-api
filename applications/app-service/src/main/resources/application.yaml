@@ -12,6 +12,8 @@ spring:
       path: "/h2"
   profiles:
     include: null
+  jackson:
+    default-property-inclusion: non_null
 
 adapters:
   r2dbc:
