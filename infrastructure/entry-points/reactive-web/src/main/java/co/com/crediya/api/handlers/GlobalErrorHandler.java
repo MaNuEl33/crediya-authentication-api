@@ -5,15 +5,12 @@ import co.com.crediya.api.exceptions.ValidationException;
 import co.com.crediya.usecase.user.exceptions.RoleNotFoundException;
 import co.com.crediya.usecase.user.exceptions.UserDuplicateEmailException;
 import co.com.crediya.usecase.user.exceptions.UserInvalidDataException;
-import jakarta.validation.ConstraintViolation;
 import lombok.experimental.UtilityClass;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.server.HandlerFilterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
-
-import java.util.stream.Collectors;
 
 @UtilityClass
 public class GlobalErrorHandler {
@@ -28,12 +25,7 @@ public class GlobalErrorHandler {
     }
 
     private static Mono<ServerResponse> handleValidationException(ValidationException e) {
-        final var errorResponse = new ErrorResponseDto(
-                HttpStatus.BAD_REQUEST.value(),
-                e.getViolations().stream()
-                        .map(ConstraintViolation::getMessage)
-                        .collect(Collectors.joining(" "))
-        );
+        final var errorResponse = new ErrorResponseDto(HttpStatus.BAD_REQUEST.value(), e.getMessage());
 
         return ServerResponse.badRequest()
                 .contentType(MediaType.APPLICATION_JSON)

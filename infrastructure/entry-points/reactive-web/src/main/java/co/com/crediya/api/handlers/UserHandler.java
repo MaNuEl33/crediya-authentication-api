@@ -33,7 +33,7 @@ public class UserHandler {
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(u))
                 .doFirst(() -> log.info("New request to register a user."))
-                .doOnSuccess(r -> log.info("The user registration request has been successfully"))
-                .doOnError(err -> log.error("The user registration request has been failed: {}", err.getMessage(), err));
+                .doOnSuccess(r -> log.info("The user registration request has been successfully."))
+                .doOnError(err -> log.error("The user registration request has been failed.", err));
     }
 }

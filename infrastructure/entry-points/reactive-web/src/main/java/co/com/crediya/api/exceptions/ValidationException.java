@@ -2,12 +2,14 @@ package co.com.crediya.api.exceptions;
 
 import jakarta.validation.ConstraintViolation;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import java.util.Set;
+import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Getter
 public class ValidationException extends RuntimeException {
-    private final transient Set<? extends ConstraintViolation<?>> violations;
+        public ValidationException(Set<? extends ConstraintViolation<?>> violations) {
+            super(violations.stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.joining(" ")));
+    }
 }
