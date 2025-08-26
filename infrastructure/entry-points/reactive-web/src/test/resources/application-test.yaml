@@ -1,0 +1,4 @@
+routes:
+  paths:
+    user:
+      register: "/api/v1/usuarios"
