@@ -1,12 +1,12 @@
-package co.com.crediya.usecase.user;
+package co.com.crediya.usecase.registeruser;
 
 import co.com.crediya.model.role.Role;
 import co.com.crediya.model.role.gateways.RoleRepository;
 import co.com.crediya.model.user.User;
 import co.com.crediya.model.user.gateways.UserRepository;
-import co.com.crediya.usecase.user.exceptions.RoleNotFoundException;
-import co.com.crediya.usecase.user.exceptions.UserDuplicateEmailException;
-import co.com.crediya.usecase.user.exceptions.UserInvalidDataException;
+import co.com.crediya.usecase.registeruser.exceptions.RoleNotFoundException;
+import co.com.crediya.usecase.registeruser.exceptions.UserDuplicateEmailException;
+import co.com.crediya.usecase.registeruser.exceptions.UserInvalidDataException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -1,12 +1,12 @@
-package co.com.crediya.usecase.user;
+package co.com.crediya.usecase.registeruser;
 
 import co.com.crediya.model.role.gateways.RoleRepository;
 import co.com.crediya.model.user.User;
 import co.com.crediya.model.user.gateways.UserRepository;
 import co.com.crediya.usecase.helpers.FieldValidatorHelper;
-import co.com.crediya.usecase.user.exceptions.RoleNotFoundException;
-import co.com.crediya.usecase.user.exceptions.UserDuplicateEmailException;
-import co.com.crediya.usecase.user.exceptions.UserInvalidDataException;
+import co.com.crediya.usecase.registeruser.exceptions.RoleNotFoundException;
+import co.com.crediya.usecase.registeruser.exceptions.UserDuplicateEmailException;
+import co.com.crediya.usecase.registeruser.exceptions.UserInvalidDataException;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 

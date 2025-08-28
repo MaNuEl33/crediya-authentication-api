@@ -1,4 +1,4 @@
-package co.com.crediya.usecase.user.exceptions;
+package co.com.crediya.usecase.registeruser.exceptions;
 
 import lombok.experimental.StandardException;
 
