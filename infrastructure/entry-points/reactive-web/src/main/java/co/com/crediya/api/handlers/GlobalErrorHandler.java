@@ -2,6 +2,7 @@ package co.com.crediya.api.handlers;
 
 import co.com.crediya.api.dtos.ErrorResponseDto;
 import co.com.crediya.api.exceptions.ValidationException;
+import co.com.crediya.model.user.exceptions.UserNotFoundException;
 import co.com.crediya.usecase.registeruser.exceptions.RoleNotFoundException;
 import co.com.crediya.usecase.registeruser.exceptions.UserDuplicateEmailException;
 import co.com.crediya.usecase.registeruser.exceptions.UserInvalidDataException;
@@ -21,6 +22,7 @@ public class GlobalErrorHandler {
                 .onErrorResume(UserInvalidDataException.class, GlobalErrorHandler::handleUserInvalidDataException)
                 .onErrorResume(RoleNotFoundException.class, GlobalErrorHandler::handleRoleNotFoundException)
                 .onErrorResume(UserDuplicateEmailException.class, GlobalErrorHandler::handleUserDuplicateEmailException)
+                .onErrorResume(UserNotFoundException.class, GlobalErrorHandler::handleUserNotFoundException)
                 .onErrorResume(Exception.class, GlobalErrorHandler::handleUnexpectedException);
     }
 
@@ -52,6 +54,14 @@ public class GlobalErrorHandler {
         final var errorResponse = new ErrorResponseDto(HttpStatus.CONFLICT.value(), e.getMessage());
 
         return ServerResponse.status(HttpStatus.CONFLICT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(errorResponse);
+    }
+
+    private static Mono<ServerResponse> handleUserNotFoundException(UserNotFoundException e) {
+        final var errorResponse = new ErrorResponseDto(HttpStatus.NOT_FOUND.value(), e.getMessage());
+
+        return ServerResponse.status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(errorResponse);
     }

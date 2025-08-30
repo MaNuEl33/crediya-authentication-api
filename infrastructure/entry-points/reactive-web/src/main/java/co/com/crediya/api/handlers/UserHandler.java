@@ -1,8 +1,10 @@
 package co.com.crediya.api.handlers;
 
 import co.com.crediya.api.dtos.RegisterUserRequestDto;
+import co.com.crediya.api.dtos.UserDto;
 import co.com.crediya.api.helpers.ValidatorHelper;
 import co.com.crediya.api.mappers.UserDtoMapper;
+import co.com.crediya.usecase.finduserbyemail.FindUserByEmailUseCase;
 import co.com.crediya.usecase.registeruser.RegisterUserUseCase;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +21,8 @@ import reactor.core.publisher.Mono;
 @Log4j2
 public class UserHandler {
 
-    private final RegisterUserUseCase useCase;
+    private final RegisterUserUseCase registerUserUseCase;
+    private final FindUserByEmailUseCase findUserByEmailUseCase;
     private final UserDtoMapper dtoMapper;
     private final Validator validator;
 
@@ -27,7 +30,7 @@ public class UserHandler {
         return serverRequest.bodyToMono(RegisterUserRequestDto.class)
                 .transform(requestBody -> ValidatorHelper.validateObject(requestBody, validator))
                 .map(this.dtoMapper::toUserModel)
-                .flatMap(this.useCase::registerUser)
+                .flatMap(this.registerUserUseCase::registerUser)
                 .map(this.dtoMapper::toRegisterUserResponseDto)
                 .flatMap(u -> ServerResponse.status(HttpStatus.CREATED)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -35,5 +38,18 @@ public class UserHandler {
                 .doFirst(() -> log.info("New request to register a user."))
                 .doOnSuccess(r -> log.info("The user registration request has been successfully."))
                 .doOnError(err -> log.error("The user registration request has been failed.", err));
+    }
+
+    public Mono<ServerResponse> listenFindUserByEmail(ServerRequest serverRequest) {
+        final var email = serverRequest.queryParam("email").orElseThrow();
+
+        return this.findUserByEmailUseCase.findUserByEmail(email)
+                .map(this.dtoMapper::toUserDto)
+                .flatMap(u -> ServerResponse.status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(u))
+                .doFirst(() -> log.info("New request to find user by email."))
+                .doOnSuccess(r -> log.info("The user was found successfully."))
+                .doOnError(err -> log.error("Error finding user by email.", err));
     }
 }

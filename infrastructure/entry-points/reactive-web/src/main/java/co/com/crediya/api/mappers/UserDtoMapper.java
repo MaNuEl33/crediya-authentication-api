@@ -2,6 +2,7 @@ package co.com.crediya.api.mappers;
 
 import co.com.crediya.api.dtos.RegisterUserRequestDto;
 import co.com.crediya.api.dtos.RegisterUserResponseDto;
+import co.com.crediya.api.dtos.UserDto;
 import co.com.crediya.model.role.Role;
 import co.com.crediya.model.user.User;
 import org.mapstruct.Mapper;
@@ -22,4 +23,6 @@ public interface UserDtoMapper {
     @Mapping(target = "name", ignore = true)
     @Mapping(target = "description", ignore = true)
     Role toRole(Long roleId);
+
+    UserDto toUserDto(User user);
 }

@@ -34,4 +34,13 @@ public class UserRepositoryAdapter implements UserRepository {
                 .doOnSuccess(u -> log.info("The validation was successful."))
                 .doOnError(err -> log.error("Error applying the validation: {}", err.getMessage()));
     }
+
+    @Override
+    public Mono<User> findByEmail(String email) {
+        return this.reactiveRepository.findByEmail(email)
+                .map(this.entityMapper::toUserModel)
+                .doFirst(() -> log.info("Finding user by email in the database."))
+                .doOnSuccess(u -> log.info("User found in the database."))
+                .doOnError(err -> log.error("Error finding the user in the database", err));
+    }
 }

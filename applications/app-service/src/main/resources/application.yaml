@@ -29,6 +29,7 @@ routes:
   paths:
     user:
       register: "/api/v1/usuarios"
+      find-by-email: "/api/v1/usuarios"
 
 management:
   endpoints:
