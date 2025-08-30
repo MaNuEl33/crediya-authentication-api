@@ -2,6 +2,7 @@ package co.com.crediya.usecase.registeruser;
 
 import co.com.crediya.model.role.gateways.RoleRepository;
 import co.com.crediya.model.user.User;
+import co.com.crediya.model.user.gateways.PasswordEncrypter;
 import co.com.crediya.model.user.gateways.UserRepository;
 import co.com.crediya.usecase.helpers.FieldValidatorHelper;
 import co.com.crediya.usecase.registeruser.exceptions.RoleNotFoundException;
@@ -23,10 +24,13 @@ public class RegisterUserUseCase {
 
     private final RoleRepository roleRepository;
 
+    private final PasswordEncrypter passwordEncrypter;
+
     public Mono<User> registerUser(User user) {
         return this.validateUser(user)
                 .flatMap(this::validateExistingRole)
                 .flatMap(this::validateUniqueEmail)
+                .map(this::encryptPassword)
                 .flatMap(this.userRepository::saveUser);
     }
 
@@ -42,6 +46,10 @@ public class RegisterUserUseCase {
                 .switchIfEmpty(Mono.error(new UserInvalidDataException("The last name of the user is required.")))
                 .filter(u -> FieldValidatorHelper.isNotBlank(u.getEmail()))
                 .switchIfEmpty(Mono.error(new UserInvalidDataException("The email of the user is required.")))
+                .filter(u -> FieldValidatorHelper.isNotBlank(u.getPassword()))
+                .switchIfEmpty(Mono.error(new UserInvalidDataException("The password of the user is required.")))
+                .filter(u -> u.getPassword().length() >= 6)
+                .switchIfEmpty(Mono.error(new UserInvalidDataException("The minimum length of the password is 6.")))
                 .filter(u -> FieldValidatorHelper.isValidEmail(u.getEmail()))
                 .switchIfEmpty(Mono.error(new UserInvalidDataException("The email of the user is not valid.")))
                 .filter(u -> Objects.nonNull(u.getBaseSalary()))
@@ -68,5 +76,13 @@ public class RegisterUserUseCase {
                         ? Mono.error(new UserDuplicateEmailException("The email of the user is already exists."))
                         : Mono.just(user)
                 );
+    }
+
+    private User encryptPassword(User user) {
+        final var encryptedPassword = this.passwordEncrypter.encrypt(user.getPassword());
+
+        return user.toBuilder()
+                .password(encryptedPassword)
+                .build();
     }
 }

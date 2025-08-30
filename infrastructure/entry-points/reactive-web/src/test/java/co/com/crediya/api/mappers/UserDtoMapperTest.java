@@ -20,7 +20,7 @@ class UserDtoMapperTest {
     void shouldMapToUserModel() {
         final var requestDto = new RegisterUserRequestDto(
                 "Julio", "Haro", LocalDate.of(1987, Month.JUNE, 12),
-                "Address 1", "julioharo1987@gmail.com", "965212365",
+                "Address 1", "julioharo1987@gmail.com", "mi_pwd_poderoso_1", "965212365",
                 "43652125", BigDecimal.valueOf(4000), 1L
         );
 
@@ -30,6 +30,7 @@ class UserDtoMapperTest {
                 .birthDate(LocalDate.of(1987, Month.JUNE, 12))
                 .address("Address 1")
                 .email("julioharo1987@gmail.com")
+                .password("mi_pwd_poderoso_1")
                 .phoneNumber("965212365")
                 .documentNumber("43652125")
                 .baseSalary(BigDecimal.valueOf(4000))
@@ -51,6 +52,7 @@ class UserDtoMapperTest {
                 .birthDate(LocalDate.of(1986, Month.JUNE, 8))
                 .address("Address 2")
                 .email("carlosarroyo1986@gmail.com")
+                .password("mi_pwd_poderoso_2")
                 .phoneNumber("947586784")
                 .documentNumber("43685768")
                 .baseSalary(BigDecimal.valueOf(5000))

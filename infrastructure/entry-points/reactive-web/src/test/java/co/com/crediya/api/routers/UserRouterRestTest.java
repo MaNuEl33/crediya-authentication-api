@@ -36,6 +36,7 @@ class UserRouterRestTest {
     private static final String FIRST_NAME = "Anggie";
     private static final String LAST_NAME = "Yengle";
     private static final String EMAIL = "anggieyengle2000@mail.com";
+    private static final String PWD = "mi_poderoso_password_2";
 
     @Autowired
     private WebTestClient webTestClient;
@@ -49,7 +50,7 @@ class UserRouterRestTest {
     @Test
     void shouldRegisterUserSuccessfully() {
         final var requestBody = new RegisterUserRequestDto(
-                FIRST_NAME, LAST_NAME, null, null, EMAIL, null,
+                FIRST_NAME, LAST_NAME, null, null, EMAIL, PWD, null,
                 null, BigDecimal.valueOf(4000), 1L
         );
 
@@ -85,7 +86,7 @@ class UserRouterRestTest {
     @Test
     void shouldNotRegisterUserIfFirstNameIsBlank() {
         final var requestBody = new RegisterUserRequestDto(
-                null, LAST_NAME, null, null, EMAIL, null,
+                null, LAST_NAME, null, null, EMAIL, PWD, null,
                 null, BigDecimal.valueOf(4000), 1L
         );
 
@@ -103,7 +104,7 @@ class UserRouterRestTest {
     @Test
     void shouldNotRegisterUserIfLastNameIsBlank() {
         final var requestBody = new RegisterUserRequestDto(
-                FIRST_NAME, null, null, null, EMAIL, null,
+                FIRST_NAME, null, null, null, EMAIL, PWD, null,
                 null, BigDecimal.valueOf(4000), 1L
         );
 
@@ -121,7 +122,7 @@ class UserRouterRestTest {
     @Test
     void shouldNotRegisterUserIfEmailIsBlank() {
         final var requestBody = new RegisterUserRequestDto(
-                FIRST_NAME, LAST_NAME, null, null, null, null,
+                FIRST_NAME, LAST_NAME, null, null, null, PWD, null,
                 null, BigDecimal.valueOf(4000), 1L
         );
 
@@ -139,7 +140,7 @@ class UserRouterRestTest {
     @Test
     void shouldNotRegisterUserIfEmailIsInvalid() {
         final var requestBody = new RegisterUserRequestDto(
-                FIRST_NAME, LAST_NAME, null, null, "ayengle", null,
+                FIRST_NAME, LAST_NAME, null, null, "ayengle", PWD, null,
                 null, BigDecimal.valueOf(4000), 1L
         );
 
@@ -157,7 +158,7 @@ class UserRouterRestTest {
     @Test
     void shouldNotRegisterUserIfBaseSalaryIsNull() {
         final var requestBody = new RegisterUserRequestDto(
-                FIRST_NAME, LAST_NAME, null, null, EMAIL, null,
+                FIRST_NAME, LAST_NAME, null, null, EMAIL, PWD, null,
                 null, null, 1L
         );
 
@@ -175,7 +176,7 @@ class UserRouterRestTest {
     @Test
     void shouldNotRegisterUserIfBaseSalaryExceedsTheLimit() {
         final var requestBody = new RegisterUserRequestDto(
-                FIRST_NAME, LAST_NAME, null, null, EMAIL, null,
+                FIRST_NAME, LAST_NAME, null, null, EMAIL, PWD, null,
                 null, BigDecimal.valueOf(100000000), 1L
         );
 
@@ -193,7 +194,7 @@ class UserRouterRestTest {
     @Test
     void shouldNotRegisterUserIfBaseSalaryIsLessThanTheLimit() {
         final var requestBody = new RegisterUserRequestDto(
-                FIRST_NAME, LAST_NAME, null, null, EMAIL, null,
+                FIRST_NAME, LAST_NAME, null, null, EMAIL, PWD, null,
                 null, BigDecimal.valueOf(-10), 1L
         );
 
@@ -211,7 +212,7 @@ class UserRouterRestTest {
     @Test
     void shouldNotRegisterUserIfRoleIdIsNull() {
         final var requestBody = new RegisterUserRequestDto(
-                FIRST_NAME, LAST_NAME, null, null, EMAIL, null,
+                FIRST_NAME, LAST_NAME, null, null, EMAIL, PWD, null,
                 null, BigDecimal.valueOf(4000), null
         );
 
@@ -229,7 +230,7 @@ class UserRouterRestTest {
     @Test
     void shouldNotRegisterUserIfUserInvalidDataExceptionIsThrown() {
         final var requestBody = new RegisterUserRequestDto(
-                FIRST_NAME, LAST_NAME, null, null, EMAIL, null,
+                FIRST_NAME, LAST_NAME, null, null, EMAIL, PWD, null,
                 null, BigDecimal.valueOf(4000), 1L
         );
 
@@ -256,7 +257,7 @@ class UserRouterRestTest {
     @Test
     void shouldNotRegisterUserIfRoleNotFoundExceptionIsThrown() {
         final var requestBody = new RegisterUserRequestDto(
-                FIRST_NAME, LAST_NAME, null, null, EMAIL, null,
+                FIRST_NAME, LAST_NAME, null, null, EMAIL, PWD, null,
                 null, BigDecimal.valueOf(4000), 1L
         );
 
@@ -283,7 +284,7 @@ class UserRouterRestTest {
     @Test
     void shouldNotRegisterUserIfUserDuplicateEmailExceptionIsThrown() {
         final var requestBody = new RegisterUserRequestDto(
-                FIRST_NAME, LAST_NAME, null, null, EMAIL, null,
+                FIRST_NAME, LAST_NAME, null, null, EMAIL, PWD, null,
                 null, BigDecimal.valueOf(4000), 1L
         );
 
@@ -310,7 +311,7 @@ class UserRouterRestTest {
     @Test
     void shouldNotRegisterUserIfUnexpectedExceptionIsThrown() {
         final var requestBody = new RegisterUserRequestDto(
-                FIRST_NAME, LAST_NAME, null, null, EMAIL, null,
+                FIRST_NAME, LAST_NAME, null, null, EMAIL, PWD, null,
                 null, BigDecimal.valueOf(4000), 1L
         );
 
@@ -332,5 +333,41 @@ class UserRouterRestTest {
         Mockito.verify(this.useCase).registerUser(User.builder().build());
 
         Mockito.verifyNoMoreInteractions(this.dtoMapper, this.useCase);
+    }
+
+    @Test
+    void shouldNotRegisterUserIfPasswordIsBlank() {
+        final var requestBody = new RegisterUserRequestDto(
+                FIRST_NAME, LAST_NAME, null, null, EMAIL, null, null,
+                null, BigDecimal.valueOf(4000), 1L
+        );
+
+        this.webTestClient.post()
+                .uri(PATH)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestBody)
+                .exchange()
+                .expectStatus().isBadRequest();
+
+        Mockito.verifyNoInteractions(this.dtoMapper, this.useCase);
+    }
+
+    @Test
+    void shouldNotRegisterUserWhenSizeEmailIsLowerThanSix() {
+        final var requestBody = new RegisterUserRequestDto(
+                FIRST_NAME, LAST_NAME, null, null, EMAIL, "12345", null,
+                null, BigDecimal.valueOf(4000), 1L
+        );
+
+        this.webTestClient.post()
+                .uri(PATH)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestBody)
+                .exchange()
+                .expectStatus().isBadRequest();
+
+        Mockito.verifyNoInteractions(this.dtoMapper, this.useCase);
     }
 }

@@ -3,6 +3,7 @@ package co.com.crediya.usecase.registeruser;
 import co.com.crediya.model.role.Role;
 import co.com.crediya.model.role.gateways.RoleRepository;
 import co.com.crediya.model.user.User;
+import co.com.crediya.model.user.gateways.PasswordEncrypter;
 import co.com.crediya.model.user.gateways.UserRepository;
 import co.com.crediya.usecase.registeruser.exceptions.RoleNotFoundException;
 import co.com.crediya.usecase.registeruser.exceptions.UserDuplicateEmailException;
@@ -24,12 +25,17 @@ class RegisterUserUseCaseTest {
     private static final String FIRST_NAME = "Manuel";
     private static final String LAST_NAME = "Haro";
     private static final String EMAIL = "manuelharo1994@gmail.com";
+    private static final String PWD = "mi_poderoso_password";
+    private static final String PWD_ENCRYPTED = "mi_poderoso_password_encrypted";
 
     @Mock
     private UserRepository userRepository;
 
     @Mock
     private RoleRepository roleRepository;
+
+    @Mock
+    private PasswordEncrypter passwordEncrypter;
 
     @InjectMocks
     private RegisterUserUseCase useCase;
@@ -40,21 +46,19 @@ class RegisterUserUseCaseTest {
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
                 .email(EMAIL)
+                .password(PWD)
                 .baseSalary(BigDecimal.valueOf(4000))
                 .role(Role.builder()
                         .id(1L)
                         .build())
                 .build();
 
-        final var savedUser = User.builder()
+        final var toSaveUser = user.toBuilder()
+                .password(PWD_ENCRYPTED)
+                .build();
+
+        final var savedUser = toSaveUser.toBuilder()
                 .id(1L)
-                .firstName(FIRST_NAME)
-                .lastName(LAST_NAME)
-                .email(EMAIL)
-                .baseSalary(BigDecimal.valueOf(4000))
-                .role(Role.builder()
-                        .id(1L)
-                        .build())
                 .build();
 
         Mockito.when(this.roleRepository.findById(Mockito.anyLong()))
@@ -62,6 +66,9 @@ class RegisterUserUseCaseTest {
 
         Mockito.when(this.userRepository.validateUniqueEmail(Mockito.anyString()))
                 .thenReturn(Mono.just(false));
+
+        Mockito.when(this.passwordEncrypter.encrypt(Mockito.anyString()))
+                .thenReturn(PWD_ENCRYPTED);
 
         Mockito.when(this.userRepository.saveUser(Mockito.any(User.class)))
                 .thenReturn(Mono.just(savedUser));
@@ -72,9 +79,10 @@ class RegisterUserUseCaseTest {
 
         Mockito.verify(this.roleRepository).findById(1L);
         Mockito.verify(this.userRepository).validateUniqueEmail("manuelharo1994@gmail.com");
-        Mockito.verify(this.userRepository).saveUser(user);
+        Mockito.verify(this.passwordEncrypter).encrypt(PWD);
+        Mockito.verify(this.userRepository).saveUser(toSaveUser);
 
-        Mockito.verifyNoMoreInteractions(this.roleRepository, this.userRepository);
+        Mockito.verifyNoMoreInteractions(this.roleRepository, this.userRepository, this.passwordEncrypter);
     }
 
     @Test
@@ -82,7 +90,7 @@ class RegisterUserUseCaseTest {
         StepVerifier.create(this.useCase.registerUser(null))
                 .verifyError(UserInvalidDataException.class);
 
-        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository);
+        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
 
     @Test
@@ -90,6 +98,7 @@ class RegisterUserUseCaseTest {
         final var user = User.builder()
                 .lastName(LAST_NAME)
                 .email(EMAIL)
+                .password(PWD)
                 .baseSalary(BigDecimal.valueOf(4000))
                 .role(Role.builder()
                         .id(1L)
@@ -99,7 +108,7 @@ class RegisterUserUseCaseTest {
         StepVerifier.create(this.useCase.registerUser(user))
                 .verifyError(UserInvalidDataException.class);
 
-        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository);
+        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
 
     @Test
@@ -107,6 +116,7 @@ class RegisterUserUseCaseTest {
         final var user = User.builder()
                 .firstName(FIRST_NAME)
                 .email(EMAIL)
+                .password(PWD)
                 .baseSalary(BigDecimal.valueOf(4000))
                 .role(Role.builder()
                         .id(1L)
@@ -116,7 +126,7 @@ class RegisterUserUseCaseTest {
         StepVerifier.create(this.useCase.registerUser(user))
                 .verifyError(UserInvalidDataException.class);
 
-        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository);
+        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
 
     @Test
@@ -124,6 +134,7 @@ class RegisterUserUseCaseTest {
         final var user = User.builder()
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
+                .password(PWD)
                 .baseSalary(BigDecimal.valueOf(4000))
                 .role(Role.builder()
                         .id(1L)
@@ -133,7 +144,7 @@ class RegisterUserUseCaseTest {
         StepVerifier.create(this.useCase.registerUser(user))
                 .verifyError(UserInvalidDataException.class);
 
-        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository);
+        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
 
     @Test
@@ -142,6 +153,7 @@ class RegisterUserUseCaseTest {
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
                 .email("manuelharo")
+                .password(PWD)
                 .baseSalary(BigDecimal.valueOf(4000))
                 .role(Role.builder()
                         .id(1L)
@@ -151,7 +163,7 @@ class RegisterUserUseCaseTest {
         StepVerifier.create(this.useCase.registerUser(user))
                 .verifyError(UserInvalidDataException.class);
 
-        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository);
+        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
 
     @Test
@@ -160,6 +172,7 @@ class RegisterUserUseCaseTest {
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
                 .email(EMAIL)
+                .password(PWD)
                 .role(Role.builder()
                         .id(1L)
                         .build())
@@ -168,7 +181,7 @@ class RegisterUserUseCaseTest {
         StepVerifier.create(this.useCase.registerUser(user))
                 .verifyError(UserInvalidDataException.class);
 
-        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository);
+        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
 
     @Test
@@ -177,6 +190,7 @@ class RegisterUserUseCaseTest {
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
                 .email(EMAIL)
+                .password(PWD)
                 .baseSalary(BigDecimal.valueOf(15000010))
                 .role(Role.builder()
                         .id(1L)
@@ -186,7 +200,7 @@ class RegisterUserUseCaseTest {
         StepVerifier.create(this.useCase.registerUser(user))
                 .verifyError(UserInvalidDataException.class);
 
-        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository);
+        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
 
     @Test
@@ -195,6 +209,7 @@ class RegisterUserUseCaseTest {
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
                 .email(EMAIL)
+                .password(PWD)
                 .baseSalary(BigDecimal.valueOf(-1))
                 .role(Role.builder()
                         .id(1L)
@@ -204,7 +219,7 @@ class RegisterUserUseCaseTest {
         StepVerifier.create(this.useCase.registerUser(user))
                 .verifyError(UserInvalidDataException.class);
 
-        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository);
+        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
 
     @Test
@@ -213,13 +228,14 @@ class RegisterUserUseCaseTest {
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
                 .email(EMAIL)
+                .password(PWD)
                 .baseSalary(BigDecimal.valueOf(4000))
                 .build();
 
         StepVerifier.create(this.useCase.registerUser(user))
                 .verifyError(UserInvalidDataException.class);
 
-        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository);
+        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
 
     @Test
@@ -228,6 +244,7 @@ class RegisterUserUseCaseTest {
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
                 .email(EMAIL)
+                .password(PWD)
                 .baseSalary(BigDecimal.valueOf(4000))
                 .role(Role.builder().build())
                 .build();
@@ -235,7 +252,7 @@ class RegisterUserUseCaseTest {
         StepVerifier.create(this.useCase.registerUser(user))
                 .verifyError(UserInvalidDataException.class);
 
-        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository);
+        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
 
     @Test
@@ -244,6 +261,7 @@ class RegisterUserUseCaseTest {
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
                 .email(EMAIL)
+                .password(PWD)
                 .baseSalary(BigDecimal.valueOf(4000))
                 .role(Role.builder()
                         .id(1L)
@@ -259,7 +277,7 @@ class RegisterUserUseCaseTest {
         Mockito.verify(this.roleRepository).findById(1L);
 
         Mockito.verifyNoMoreInteractions(this.roleRepository);
-        Mockito.verifyNoInteractions(this.userRepository);
+        Mockito.verifyNoInteractions(this.userRepository, this.passwordEncrypter);
     }
 
     @Test
@@ -268,6 +286,7 @@ class RegisterUserUseCaseTest {
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
                 .email(EMAIL)
+                .password(PWD)
                 .baseSalary(BigDecimal.valueOf(4000))
                 .role(Role.builder()
                         .id(1L)
@@ -286,6 +305,43 @@ class RegisterUserUseCaseTest {
         Mockito.verify(this.roleRepository).findById(1L);
         Mockito.verify(this.userRepository).validateUniqueEmail("manuelharo1994@gmail.com");
 
-        Mockito.verifyNoMoreInteractions(this.roleRepository, this.userRepository);
+        Mockito.verifyNoMoreInteractions(this.roleRepository, this.userRepository, this.passwordEncrypter);
+    }
+
+    @Test
+    void shouldNotRegisterUserWhenPasswordIsBlank() {
+        final var user = User.builder()
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .email(EMAIL)
+                .baseSalary(BigDecimal.valueOf(4000))
+                .role(Role.builder()
+                        .id(1L)
+                        .build())
+                .build();
+
+        StepVerifier.create(this.useCase.registerUser(user))
+                .verifyError(UserInvalidDataException.class);
+
+        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
+    }
+
+    @Test
+    void shouldNotRegisterUserWhenSizeEmailIsLowerThanSix() {
+        final var user = User.builder()
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .email(EMAIL)
+                .password("12345")
+                .baseSalary(BigDecimal.valueOf(4000))
+                .role(Role.builder()
+                        .id(1L)
+                        .build())
+                .build();
+
+        StepVerifier.create(this.useCase.registerUser(user))
+                .verifyError(UserInvalidDataException.class);
+
+        Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
 }

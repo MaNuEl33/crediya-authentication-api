@@ -35,6 +35,8 @@ public class UserEntity {
 
     private String email;
 
+    private String password;
+
     @Column("telefono")
     private String phoneNumber;
 

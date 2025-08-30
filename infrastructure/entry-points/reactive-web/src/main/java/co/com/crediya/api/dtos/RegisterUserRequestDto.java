@@ -11,6 +11,9 @@ public record RegisterUserRequestDto(
         String address,
         @NotBlank(message = "The email field is required.")
         @Email(message = "The email must be valid.") String email,
+        @NotBlank(message = "The password of the user is required.")
+        @Size(min = 6, message = "The minimum length of the password is 6.")
+        String password,
         String phoneNumber,
         String documentNumber,
         @NotNull(message = "The base_salary field is required.")

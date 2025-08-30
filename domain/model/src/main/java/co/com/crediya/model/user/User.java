@@ -17,6 +17,7 @@ public class User {
     private LocalDate birthDate;
     private String address;
     private String email;
+    private String password;
     private String phoneNumber;
     private String documentNumber;
     private BigDecimal baseSalary;
