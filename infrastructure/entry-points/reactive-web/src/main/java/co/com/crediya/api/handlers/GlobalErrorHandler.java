@@ -2,9 +2,9 @@ package co.com.crediya.api.handlers;
 
 import co.com.crediya.api.dtos.ErrorResponseDto;
 import co.com.crediya.api.exceptions.ValidationException;
-import co.com.crediya.usecase.registeruser.exceptions.RoleNotFoundException;
-import co.com.crediya.usecase.registeruser.exceptions.UserDuplicateEmailException;
-import co.com.crediya.usecase.registeruser.exceptions.UserInvalidDataException;
+import co.com.crediya.model.role.exceptions.RoleNotFoundException;
+import co.com.crediya.model.user.exceptions.UserDuplicateEmailException;
+import co.com.crediya.model.user.exceptions.UserInvalidDataException;
 import lombok.experimental.UtilityClass;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

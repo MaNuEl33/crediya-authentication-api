@@ -1,4 +1,4 @@
-package co.com.crediya.usecase.registeruser.exceptions;
+package co.com.crediya.model.role.exceptions;
 
 import lombok.experimental.StandardException;
 

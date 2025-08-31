@@ -5,9 +5,9 @@ import co.com.crediya.model.user.User;
 import co.com.crediya.model.user.gateways.PasswordEncrypter;
 import co.com.crediya.model.user.gateways.UserRepository;
 import co.com.crediya.usecase.helpers.FieldValidatorHelper;
-import co.com.crediya.usecase.registeruser.exceptions.RoleNotFoundException;
-import co.com.crediya.usecase.registeruser.exceptions.UserDuplicateEmailException;
-import co.com.crediya.usecase.registeruser.exceptions.UserInvalidDataException;
+import co.com.crediya.model.role.exceptions.RoleNotFoundException;
+import co.com.crediya.model.user.exceptions.UserDuplicateEmailException;
+import co.com.crediya.model.user.exceptions.UserInvalidDataException;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
