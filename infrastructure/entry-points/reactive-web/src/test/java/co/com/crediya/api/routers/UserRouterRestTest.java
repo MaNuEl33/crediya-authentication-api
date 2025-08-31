@@ -15,6 +15,7 @@ import co.com.crediya.model.user.exceptions.UserRegistrationInvalidDataException
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,7 @@ import java.math.BigDecimal;
 
 @ContextConfiguration(classes = {UserRouterRest.class, RegisterUserHandler.class, LoginUserHandler.class})
 @EnableConfigurationProperties(UserPath.class)
-@WebFluxTest
+@WebFluxTest(excludeAutoConfiguration = ReactiveSecurityAutoConfiguration.class)
 @ActiveProfiles("test")
 class UserRouterRestTest {
 
