@@ -3,8 +3,10 @@ package co.com.crediya.api.handlers;
 import co.com.crediya.api.dtos.ErrorResponseDto;
 import co.com.crediya.api.exceptions.ValidationException;
 import co.com.crediya.model.role.exceptions.RoleNotFoundException;
+import co.com.crediya.model.user.exceptions.UserBadCredentialsException;
 import co.com.crediya.model.user.exceptions.UserDuplicateEmailException;
-import co.com.crediya.model.user.exceptions.UserInvalidDataException;
+import co.com.crediya.model.user.exceptions.UserRegistrationInvalidDataException;
+import co.com.crediya.model.user.exceptions.UserLoginInvalidDataException;
 import lombok.experimental.UtilityClass;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,9 +20,11 @@ public class GlobalErrorHandler {
     public static HandlerFilterFunction<ServerResponse, ServerResponse> errorHandler() {
         return (request, next) -> next.handle(request)
                 .onErrorResume(ValidationException.class, GlobalErrorHandler::handleValidationException)
-                .onErrorResume(UserInvalidDataException.class, GlobalErrorHandler::handleUserInvalidDataException)
+                .onErrorResume(UserRegistrationInvalidDataException.class, GlobalErrorHandler::handleInvalidDataException)
+                .onErrorResume(UserLoginInvalidDataException.class, GlobalErrorHandler::handleInvalidDataException)
                 .onErrorResume(RoleNotFoundException.class, GlobalErrorHandler::handleRoleNotFoundException)
                 .onErrorResume(UserDuplicateEmailException.class, GlobalErrorHandler::handleUserDuplicateEmailException)
+                .onErrorResume(UserBadCredentialsException.class, GlobalErrorHandler::handleUserBadCredentialsException)
                 .onErrorResume(Exception.class, GlobalErrorHandler::handleUnexpectedException);
     }
 
@@ -32,7 +36,7 @@ public class GlobalErrorHandler {
                 .bodyValue(errorResponse);
     }
 
-    private static Mono<ServerResponse> handleUserInvalidDataException(UserInvalidDataException e) {
+    private static Mono<ServerResponse> handleInvalidDataException(Exception e) {
         final var errorResponse = new ErrorResponseDto(HttpStatus.BAD_REQUEST.value(), e.getMessage());
 
         return ServerResponse.badRequest()
@@ -56,9 +60,17 @@ public class GlobalErrorHandler {
                 .bodyValue(errorResponse);
     }
 
+    private static Mono<ServerResponse> handleUserBadCredentialsException(UserBadCredentialsException e) {
+        final var errorResponse = new ErrorResponseDto(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+
+        return ServerResponse.status(HttpStatus.UNAUTHORIZED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(errorResponse);
+    }
+
     private static Mono<ServerResponse> handleUnexpectedException(Exception e) {
         final var errorResponse = new ErrorResponseDto(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                e.getMessage());
+                "An unexpected error has occurred. Please try again in a moment.");
 
         return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .contentType(MediaType.APPLICATION_JSON)

@@ -2,7 +2,8 @@ package co.com.crediya.api.routers;
 
 import co.com.crediya.api.config.UserPath;
 import co.com.crediya.api.handlers.GlobalErrorHandler;
-import co.com.crediya.api.handlers.UserHandler;
+import co.com.crediya.api.handlers.LoginUserHandler;
+import co.com.crediya.api.handlers.RegisterUserHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,12 +17,14 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @RequiredArgsConstructor
 public class UserRouterRest {
 
-    private final UserHandler userHandler;
+    private final RegisterUserHandler registerUserHandler;
+    private final LoginUserHandler loginUserHandler;
     private final UserPath userPath;
 
     @Bean
     public RouterFunction<ServerResponse> userRoutes() {
-        return route(POST(this.userPath.getRegister()), this.userHandler::listenRegisterUser)
+        return route(POST(this.userPath.getRegister()), this.registerUserHandler::listenRegisterUser)
+                .andRoute(POST(this.userPath.getLogin()), this.loginUserHandler::listenLoginUser)
                 .filter(GlobalErrorHandler.errorHandler());
     }
 }

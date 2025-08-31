@@ -2,7 +2,7 @@ package co.com.crediya.api.handlers;
 
 import co.com.crediya.api.dtos.RegisterUserRequestDto;
 import co.com.crediya.api.helpers.ValidatorHelper;
-import co.com.crediya.api.mappers.UserDtoMapper;
+import co.com.crediya.api.mappers.RegisterUserDtoMapper;
 import co.com.crediya.usecase.registeruser.RegisterUserUseCase;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +17,10 @@ import reactor.core.publisher.Mono;
 @Component
 @RequiredArgsConstructor
 @Log4j2
-public class UserHandler {
+public class RegisterUserHandler {
 
     private final RegisterUserUseCase useCase;
-    private final UserDtoMapper dtoMapper;
+    private final RegisterUserDtoMapper dtoMapper;
     private final Validator validator;
 
     public Mono<ServerResponse> listenRegisterUser(ServerRequest serverRequest) {

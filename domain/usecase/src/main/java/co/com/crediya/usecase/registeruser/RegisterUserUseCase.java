@@ -7,7 +7,7 @@ import co.com.crediya.model.user.gateways.UserRepository;
 import co.com.crediya.usecase.helpers.FieldValidatorHelper;
 import co.com.crediya.model.role.exceptions.RoleNotFoundException;
 import co.com.crediya.model.user.exceptions.UserDuplicateEmailException;
-import co.com.crediya.model.user.exceptions.UserInvalidDataException;
+import co.com.crediya.model.user.exceptions.UserRegistrationInvalidDataException;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
@@ -36,32 +36,32 @@ public class RegisterUserUseCase {
 
     private Mono<User> validateUser(User user) {
         if (Objects.isNull(user)) {
-            return Mono.error(new UserInvalidDataException("The user is required."));
+            return Mono.error(new UserRegistrationInvalidDataException("The user is required."));
         }
 
         return Mono.just(user)
                 .filter(u -> FieldValidatorHelper.isNotBlank(u.getFirstName()))
-                .switchIfEmpty(Mono.error(new UserInvalidDataException("The first name of the user is required.")))
+                .switchIfEmpty(Mono.error(new UserRegistrationInvalidDataException("The first name of the user is required.")))
                 .filter(u -> FieldValidatorHelper.isNotBlank(u.getLastName()))
-                .switchIfEmpty(Mono.error(new UserInvalidDataException("The last name of the user is required.")))
+                .switchIfEmpty(Mono.error(new UserRegistrationInvalidDataException("The last name of the user is required.")))
                 .filter(u -> FieldValidatorHelper.isNotBlank(u.getEmail()))
-                .switchIfEmpty(Mono.error(new UserInvalidDataException("The email of the user is required.")))
+                .switchIfEmpty(Mono.error(new UserRegistrationInvalidDataException("The email of the user is required.")))
                 .filter(u -> FieldValidatorHelper.isNotBlank(u.getPassword()))
-                .switchIfEmpty(Mono.error(new UserInvalidDataException("The password of the user is required.")))
+                .switchIfEmpty(Mono.error(new UserRegistrationInvalidDataException("The password of the user is required.")))
                 .filter(u -> u.getPassword().length() >= 6)
-                .switchIfEmpty(Mono.error(new UserInvalidDataException("The minimum length of the password is 6.")))
+                .switchIfEmpty(Mono.error(new UserRegistrationInvalidDataException("The minimum length of the password is 6.")))
                 .filter(u -> FieldValidatorHelper.isValidEmail(u.getEmail()))
-                .switchIfEmpty(Mono.error(new UserInvalidDataException("The email of the user is not valid.")))
+                .switchIfEmpty(Mono.error(new UserRegistrationInvalidDataException("The email of the user is not valid.")))
                 .filter(u -> Objects.nonNull(u.getBaseSalary()))
-                .switchIfEmpty(Mono.error(new UserInvalidDataException("The base salary of the user is required.")))
+                .switchIfEmpty(Mono.error(new UserRegistrationInvalidDataException("The base salary of the user is required.")))
                 .filter(u -> FieldValidatorHelper.isInRange(u.getBaseSalary(), MIN_BASE_SALARY, MAX_BASE_SALARY))
-                .switchIfEmpty(Mono.error(new UserInvalidDataException(
+                .switchIfEmpty(Mono.error(new UserRegistrationInvalidDataException(
                         "The base salary range of the user must be between %s and %s."
                                 .formatted(MIN_BASE_SALARY, MAX_BASE_SALARY))))
                 .filter(u -> Objects.nonNull(u.getRole()))
-                .switchIfEmpty(Mono.error(new UserInvalidDataException("The role of the user is required.")))
+                .switchIfEmpty(Mono.error(new UserRegistrationInvalidDataException("The role of the user is required.")))
                 .filter(u -> Objects.nonNull(u.getRole().getId()))
-                .switchIfEmpty(Mono.error(new UserInvalidDataException("The id role of the user is required.")));
+                .switchIfEmpty(Mono.error(new UserRegistrationInvalidDataException("The id role of the user is required.")));
     }
 
     private Mono<User> validateExistingRole(User user) {

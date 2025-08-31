@@ -7,7 +7,7 @@ import co.com.crediya.model.user.gateways.PasswordEncrypter;
 import co.com.crediya.model.user.gateways.UserRepository;
 import co.com.crediya.model.role.exceptions.RoleNotFoundException;
 import co.com.crediya.model.user.exceptions.UserDuplicateEmailException;
-import co.com.crediya.model.user.exceptions.UserInvalidDataException;
+import co.com.crediya.model.user.exceptions.UserRegistrationInvalidDataException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -88,7 +88,7 @@ class RegisterUserUseCaseTest {
     @Test
     void shouldRegisterUserUnsuccessfullyWhenIsNull() {
         StepVerifier.create(this.useCase.registerUser(null))
-                .verifyError(UserInvalidDataException.class);
+                .verifyError(UserRegistrationInvalidDataException.class);
 
         Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
@@ -106,7 +106,7 @@ class RegisterUserUseCaseTest {
                 .build();
 
         StepVerifier.create(this.useCase.registerUser(user))
-                .verifyError(UserInvalidDataException.class);
+                .verifyError(UserRegistrationInvalidDataException.class);
 
         Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
@@ -124,7 +124,7 @@ class RegisterUserUseCaseTest {
                 .build();
 
         StepVerifier.create(this.useCase.registerUser(user))
-                .verifyError(UserInvalidDataException.class);
+                .verifyError(UserRegistrationInvalidDataException.class);
 
         Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
@@ -142,7 +142,7 @@ class RegisterUserUseCaseTest {
                 .build();
 
         StepVerifier.create(this.useCase.registerUser(user))
-                .verifyError(UserInvalidDataException.class);
+                .verifyError(UserRegistrationInvalidDataException.class);
 
         Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
@@ -161,7 +161,7 @@ class RegisterUserUseCaseTest {
                 .build();
 
         StepVerifier.create(this.useCase.registerUser(user))
-                .verifyError(UserInvalidDataException.class);
+                .verifyError(UserRegistrationInvalidDataException.class);
 
         Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
@@ -179,7 +179,7 @@ class RegisterUserUseCaseTest {
                 .build();
 
         StepVerifier.create(this.useCase.registerUser(user))
-                .verifyError(UserInvalidDataException.class);
+                .verifyError(UserRegistrationInvalidDataException.class);
 
         Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
@@ -198,7 +198,7 @@ class RegisterUserUseCaseTest {
                 .build();
 
         StepVerifier.create(this.useCase.registerUser(user))
-                .verifyError(UserInvalidDataException.class);
+                .verifyError(UserRegistrationInvalidDataException.class);
 
         Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
@@ -217,7 +217,7 @@ class RegisterUserUseCaseTest {
                 .build();
 
         StepVerifier.create(this.useCase.registerUser(user))
-                .verifyError(UserInvalidDataException.class);
+                .verifyError(UserRegistrationInvalidDataException.class);
 
         Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
@@ -233,7 +233,7 @@ class RegisterUserUseCaseTest {
                 .build();
 
         StepVerifier.create(this.useCase.registerUser(user))
-                .verifyError(UserInvalidDataException.class);
+                .verifyError(UserRegistrationInvalidDataException.class);
 
         Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
@@ -250,7 +250,7 @@ class RegisterUserUseCaseTest {
                 .build();
 
         StepVerifier.create(this.useCase.registerUser(user))
-                .verifyError(UserInvalidDataException.class);
+                .verifyError(UserRegistrationInvalidDataException.class);
 
         Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
@@ -321,7 +321,7 @@ class RegisterUserUseCaseTest {
                 .build();
 
         StepVerifier.create(this.useCase.registerUser(user))
-                .verifyError(UserInvalidDataException.class);
+                .verifyError(UserRegistrationInvalidDataException.class);
 
         Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }
@@ -340,7 +340,7 @@ class RegisterUserUseCaseTest {
                 .build();
 
         StepVerifier.create(this.useCase.registerUser(user))
-                .verifyError(UserInvalidDataException.class);
+                .verifyError(UserRegistrationInvalidDataException.class);
 
         Mockito.verifyNoInteractions(this.userRepository,  this.roleRepository, this.passwordEncrypter);
     }

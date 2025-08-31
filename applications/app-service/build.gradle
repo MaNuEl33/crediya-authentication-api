@@ -1,6 +1,7 @@
 apply plugin: 'org.springframework.boot'
 
 dependencies {
+	implementation project(':jwt-token-provider')
 	implementation project(':b-crypt-password-encrypter')
 	implementation project(':reactive-web')
 	implementation project(':r2dbc-postgresql')

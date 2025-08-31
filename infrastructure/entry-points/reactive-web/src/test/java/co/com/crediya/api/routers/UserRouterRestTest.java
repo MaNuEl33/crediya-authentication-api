@@ -3,13 +3,15 @@ package co.com.crediya.api.routers;
 import co.com.crediya.api.config.UserPath;
 import co.com.crediya.api.dtos.RegisterUserRequestDto;
 import co.com.crediya.api.dtos.RegisterUserResponseDto;
-import co.com.crediya.api.handlers.UserHandler;
-import co.com.crediya.api.mappers.UserDtoMapper;
+import co.com.crediya.api.handlers.LoginUserHandler;
+import co.com.crediya.api.handlers.RegisterUserHandler;
+import co.com.crediya.api.mappers.LoginUserDtoMapper;
+import co.com.crediya.api.mappers.RegisterUserDtoMapper;
 import co.com.crediya.model.user.User;
 import co.com.crediya.usecase.registeruser.RegisterUserUseCase;
 import co.com.crediya.model.role.exceptions.RoleNotFoundException;
 import co.com.crediya.model.user.exceptions.UserDuplicateEmailException;
-import co.com.crediya.model.user.exceptions.UserInvalidDataException;
+import co.com.crediya.model.user.exceptions.UserRegistrationInvalidDataException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +27,13 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 
-@ContextConfiguration(classes = {UserRouterRest.class, UserHandler.class})
+@ContextConfiguration(classes = {UserRouterRest.class, RegisterUserHandler.class, LoginUserHandler.class})
 @EnableConfigurationProperties(UserPath.class)
 @WebFluxTest
 @ActiveProfiles("test")
 class UserRouterRestTest {
 
-    private static final String PATH = "/api/v1/usuarios";
+    private static final String REGISTER_PATH = "/api/v1/usuarios";
 
     private static final String FIRST_NAME = "Anggie";
     private static final String LAST_NAME = "Yengle";
@@ -42,10 +44,16 @@ class UserRouterRestTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private RegisterUserUseCase useCase;
+    private RegisterUserUseCase registerUserUseCase;
 
     @MockitoBean
-    private UserDtoMapper dtoMapper;
+    private RegisterUserDtoMapper registerUserDtoMapper;
+
+    @MockitoBean
+    private LoginUserHandler loginUserHandler;
+
+    @MockitoBean
+    private LoginUserDtoMapper loginUserDtoMapper;
 
     @Test
     void shouldRegisterUserSuccessfully() {
@@ -59,28 +67,28 @@ class UserRouterRestTest {
                 null, BigDecimal.valueOf(4000), 1L
         );
 
-        Mockito.when(this.dtoMapper.toUserModel(Mockito.any(RegisterUserRequestDto.class)))
+        Mockito.when(this.registerUserDtoMapper.toUserModel(Mockito.any(RegisterUserRequestDto.class)))
                 .thenReturn(User.builder().build());
 
-        Mockito.when(this.useCase.registerUser(Mockito.any(User.class)))
+        Mockito.when(this.registerUserUseCase.registerUser(Mockito.any(User.class)))
                 .thenReturn(Mono.just(User.builder().build()));
 
-        Mockito.when(this.dtoMapper.toRegisterUserResponseDto(Mockito.any(User.class)))
+        Mockito.when(this.registerUserDtoMapper.toRegisterUserResponseDto(Mockito.any(User.class)))
                 .thenReturn(responseBody);
 
         this.webTestClient.post()
-                .uri(PATH)
+                .uri(REGISTER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isCreated();
 
-        Mockito.verify(this.dtoMapper).toUserModel(requestBody);
-        Mockito.verify(this.useCase).registerUser(User.builder().build());
-        Mockito.verify(this.dtoMapper).toRegisterUserResponseDto(User.builder().build());
+        Mockito.verify(this.registerUserDtoMapper).toUserModel(requestBody);
+        Mockito.verify(this.registerUserUseCase).registerUser(User.builder().build());
+        Mockito.verify(this.registerUserDtoMapper).toRegisterUserResponseDto(User.builder().build());
 
-        Mockito.verifyNoMoreInteractions(this.dtoMapper, this.useCase);
+        Mockito.verifyNoMoreInteractions(this.registerUserDtoMapper, this.registerUserUseCase);
     }
 
     @Test
@@ -91,14 +99,14 @@ class UserRouterRestTest {
         );
 
         this.webTestClient.post()
-                .uri(PATH)
+                .uri(REGISTER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isBadRequest();
 
-        Mockito.verifyNoInteractions(this.dtoMapper, this.useCase);
+        Mockito.verifyNoInteractions(this.registerUserDtoMapper, this.registerUserUseCase);
     }
 
     @Test
@@ -109,14 +117,14 @@ class UserRouterRestTest {
         );
 
         this.webTestClient.post()
-                .uri(PATH)
+                .uri(REGISTER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isBadRequest();
 
-        Mockito.verifyNoInteractions(this.dtoMapper, this.useCase);
+        Mockito.verifyNoInteractions(this.registerUserDtoMapper, this.registerUserUseCase);
     }
 
     @Test
@@ -127,14 +135,14 @@ class UserRouterRestTest {
         );
 
         this.webTestClient.post()
-                .uri(PATH)
+                .uri(REGISTER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isBadRequest();
 
-        Mockito.verifyNoInteractions(this.dtoMapper, this.useCase);
+        Mockito.verifyNoInteractions(this.registerUserDtoMapper, this.registerUserUseCase);
     }
 
     @Test
@@ -145,14 +153,14 @@ class UserRouterRestTest {
         );
 
         this.webTestClient.post()
-                .uri(PATH)
+                .uri(REGISTER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isBadRequest();
 
-        Mockito.verifyNoInteractions(this.dtoMapper, this.useCase);
+        Mockito.verifyNoInteractions(this.registerUserDtoMapper, this.registerUserUseCase);
     }
 
     @Test
@@ -163,14 +171,14 @@ class UserRouterRestTest {
         );
 
         this.webTestClient.post()
-                .uri(PATH)
+                .uri(REGISTER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isBadRequest();
 
-        Mockito.verifyNoInteractions(this.dtoMapper, this.useCase);
+        Mockito.verifyNoInteractions(this.registerUserDtoMapper, this.registerUserUseCase);
     }
 
     @Test
@@ -181,14 +189,14 @@ class UserRouterRestTest {
         );
 
         this.webTestClient.post()
-                .uri(PATH)
+                .uri(REGISTER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isBadRequest();
 
-        Mockito.verifyNoInteractions(this.dtoMapper, this.useCase);
+        Mockito.verifyNoInteractions(this.registerUserDtoMapper, this.registerUserUseCase);
     }
 
     @Test
@@ -199,14 +207,14 @@ class UserRouterRestTest {
         );
 
         this.webTestClient.post()
-                .uri(PATH)
+                .uri(REGISTER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isBadRequest();
 
-        Mockito.verifyNoInteractions(this.dtoMapper, this.useCase);
+        Mockito.verifyNoInteractions(this.registerUserDtoMapper, this.registerUserUseCase);
     }
 
     @Test
@@ -217,14 +225,14 @@ class UserRouterRestTest {
         );
 
         this.webTestClient.post()
-                .uri(PATH)
+                .uri(REGISTER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isBadRequest();
 
-        Mockito.verifyNoInteractions(this.dtoMapper, this.useCase);
+        Mockito.verifyNoInteractions(this.registerUserDtoMapper, this.registerUserUseCase);
     }
 
     @Test
@@ -234,24 +242,24 @@ class UserRouterRestTest {
                 null, BigDecimal.valueOf(4000), 1L
         );
 
-        Mockito.when(this.dtoMapper.toUserModel(Mockito.any(RegisterUserRequestDto.class)))
+        Mockito.when(this.registerUserDtoMapper.toUserModel(Mockito.any(RegisterUserRequestDto.class)))
                 .thenReturn(User.builder().build());
 
-        Mockito.when(this.useCase.registerUser(Mockito.any(User.class)))
-                .thenReturn(Mono.error(new UserInvalidDataException("User invalid data exception.")));
+        Mockito.when(this.registerUserUseCase.registerUser(Mockito.any(User.class)))
+                .thenReturn(Mono.error(new UserRegistrationInvalidDataException("User invalid data exception.")));
 
         this.webTestClient.post()
-                .uri(PATH)
+                .uri(REGISTER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isBadRequest();
 
-        Mockito.verify(this.dtoMapper).toUserModel(requestBody);
-        Mockito.verify(this.useCase).registerUser(User.builder().build());
+        Mockito.verify(this.registerUserDtoMapper).toUserModel(requestBody);
+        Mockito.verify(this.registerUserUseCase).registerUser(User.builder().build());
 
-        Mockito.verifyNoMoreInteractions(this.dtoMapper, this.useCase);
+        Mockito.verifyNoMoreInteractions(this.registerUserDtoMapper, this.registerUserUseCase);
     }
 
     @Test
@@ -261,24 +269,24 @@ class UserRouterRestTest {
                 null, BigDecimal.valueOf(4000), 1L
         );
 
-        Mockito.when(this.dtoMapper.toUserModel(Mockito.any(RegisterUserRequestDto.class)))
+        Mockito.when(this.registerUserDtoMapper.toUserModel(Mockito.any(RegisterUserRequestDto.class)))
                 .thenReturn(User.builder().build());
 
-        Mockito.when(this.useCase.registerUser(Mockito.any(User.class)))
+        Mockito.when(this.registerUserUseCase.registerUser(Mockito.any(User.class)))
                 .thenReturn(Mono.error(new RoleNotFoundException("Role not found exception.")));
 
         this.webTestClient.post()
-                .uri(PATH)
+                .uri(REGISTER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT);
 
-        Mockito.verify(this.dtoMapper).toUserModel(requestBody);
-        Mockito.verify(this.useCase).registerUser(User.builder().build());
+        Mockito.verify(this.registerUserDtoMapper).toUserModel(requestBody);
+        Mockito.verify(this.registerUserUseCase).registerUser(User.builder().build());
 
-        Mockito.verifyNoMoreInteractions(this.dtoMapper, this.useCase);
+        Mockito.verifyNoMoreInteractions(this.registerUserDtoMapper, this.registerUserUseCase);
     }
 
     @Test
@@ -288,24 +296,24 @@ class UserRouterRestTest {
                 null, BigDecimal.valueOf(4000), 1L
         );
 
-        Mockito.when(this.dtoMapper.toUserModel(Mockito.any(RegisterUserRequestDto.class)))
+        Mockito.when(this.registerUserDtoMapper.toUserModel(Mockito.any(RegisterUserRequestDto.class)))
                 .thenReturn(User.builder().build());
 
-        Mockito.when(this.useCase.registerUser(Mockito.any(User.class)))
+        Mockito.when(this.registerUserUseCase.registerUser(Mockito.any(User.class)))
                 .thenReturn(Mono.error(new UserDuplicateEmailException("User duplicate email exception.")));
 
         this.webTestClient.post()
-                .uri(PATH)
+                .uri(REGISTER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT);
 
-        Mockito.verify(this.dtoMapper).toUserModel(requestBody);
-        Mockito.verify(this.useCase).registerUser(User.builder().build());
+        Mockito.verify(this.registerUserDtoMapper).toUserModel(requestBody);
+        Mockito.verify(this.registerUserUseCase).registerUser(User.builder().build());
 
-        Mockito.verifyNoMoreInteractions(this.dtoMapper, this.useCase);
+        Mockito.verifyNoMoreInteractions(this.registerUserDtoMapper, this.registerUserUseCase);
     }
 
     @Test
@@ -315,24 +323,24 @@ class UserRouterRestTest {
                 null, BigDecimal.valueOf(4000), 1L
         );
 
-        Mockito.when(this.dtoMapper.toUserModel(Mockito.any(RegisterUserRequestDto.class)))
+        Mockito.when(this.registerUserDtoMapper.toUserModel(Mockito.any(RegisterUserRequestDto.class)))
                 .thenReturn(User.builder().build());
 
-        Mockito.when(this.useCase.registerUser(Mockito.any(User.class)))
+        Mockito.when(this.registerUserUseCase.registerUser(Mockito.any(User.class)))
                 .thenReturn(Mono.error(new RuntimeException("Unexpected exception.")));
 
         this.webTestClient.post()
-                .uri(PATH)
+                .uri(REGISTER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 
-        Mockito.verify(this.dtoMapper).toUserModel(requestBody);
-        Mockito.verify(this.useCase).registerUser(User.builder().build());
+        Mockito.verify(this.registerUserDtoMapper).toUserModel(requestBody);
+        Mockito.verify(this.registerUserUseCase).registerUser(User.builder().build());
 
-        Mockito.verifyNoMoreInteractions(this.dtoMapper, this.useCase);
+        Mockito.verifyNoMoreInteractions(this.registerUserDtoMapper, this.registerUserUseCase);
     }
 
     @Test
@@ -343,14 +351,14 @@ class UserRouterRestTest {
         );
 
         this.webTestClient.post()
-                .uri(PATH)
+                .uri(REGISTER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isBadRequest();
 
-        Mockito.verifyNoInteractions(this.dtoMapper, this.useCase);
+        Mockito.verifyNoInteractions(this.registerUserDtoMapper, this.registerUserUseCase);
     }
 
     @Test
@@ -361,13 +369,13 @@ class UserRouterRestTest {
         );
 
         this.webTestClient.post()
-                .uri(PATH)
+                .uri(REGISTER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isBadRequest();
 
-        Mockito.verifyNoInteractions(this.dtoMapper, this.useCase);
+        Mockito.verifyNoInteractions(this.registerUserDtoMapper, this.registerUserUseCase);
     }
 }

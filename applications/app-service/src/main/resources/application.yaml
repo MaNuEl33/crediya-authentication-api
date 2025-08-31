@@ -29,6 +29,7 @@ routes:
   paths:
     user:
       register: "/api/v1/usuarios"
+      login: "/api/v1/login"
 
 management:
   endpoints:
@@ -42,3 +43,7 @@ management:
 
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
+
+jwt:
+  secret: "${JWT_SECRET}"
+  expiration: ${JWT_EXPIRATION}

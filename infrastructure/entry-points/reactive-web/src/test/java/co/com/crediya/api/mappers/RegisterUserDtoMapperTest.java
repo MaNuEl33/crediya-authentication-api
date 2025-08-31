@@ -12,9 +12,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 
-class UserDtoMapperTest {
+class RegisterUserDtoMapperTest {
 
-    private final UserDtoMapper mapper = Mappers.getMapper(UserDtoMapper.class);
+    private final RegisterUserDtoMapper mapper = Mappers.getMapper(RegisterUserDtoMapper.class);
 
     @Test
     void shouldMapToUserModel() {

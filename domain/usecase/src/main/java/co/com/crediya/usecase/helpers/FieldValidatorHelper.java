@@ -20,4 +20,8 @@ public class FieldValidatorHelper {
 
         return isNotBlank(email) && email.matches(emailRegex);
     }
+
+    public static boolean isBlank(String field) {
+        return field == null || field.trim().isEmpty();
+    }
 }

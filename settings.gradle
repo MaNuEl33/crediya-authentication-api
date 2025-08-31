@@ -26,3 +26,5 @@ include ':reactive-web'
 project(':reactive-web').projectDir = file('./infrastructure/entry-points/reactive-web')
 include ':b-crypt-password-encrypter'
 project(':b-crypt-password-encrypter').projectDir = file('./infrastructure/driven-adapters/b-crypt-password-encrypter')
+include ':jwt-token-provider'
+project(':jwt-token-provider').projectDir = file('./infrastructure/driven-adapters/jwt-token-provider')

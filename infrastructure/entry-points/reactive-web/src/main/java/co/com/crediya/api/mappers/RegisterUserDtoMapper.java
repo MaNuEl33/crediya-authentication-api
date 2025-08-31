@@ -9,7 +9,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface UserDtoMapper {
+public interface RegisterUserDtoMapper {
 
     @Mapping(target = "id",  ignore = true)
     @Mapping(target = "role", source = "roleId")
