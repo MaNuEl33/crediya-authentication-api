@@ -41,7 +41,7 @@ public class HttpSecurityConfig {
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers(this.userPath.getLogin()).permitAll()
-                        .pathMatchers(this.userPath.getRegister()).hasRole("ADMIN")
+                        .pathMatchers(this.userPath.getRegister()).hasAnyRole("ADMIN", "ADVISOR")
                         .anyExchange().authenticated()
                 )
                 .addFilterAt(jwtAuthFilter, SecurityWebFiltersOrder.AUTHENTICATION)
