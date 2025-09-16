@@ -2,6 +2,7 @@ package co.com.crediya.config;
 
 import co.com.crediya.usecase.loginuser.LogInUserUseCase;
 import co.com.crediya.usecase.registeruser.RegisterUserUseCase;
+import co.com.crediya.usecase.searchusers.SearchUsersUseCase;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -41,6 +42,11 @@ class UseCasesConfigTest {
         @Bean
         public LogInUserUseCase logInUserUseCase() {
             return Mockito.mock(LogInUserUseCase.class);
+        }
+
+        @Bean
+        public SearchUsersUseCase  searchUsersUseCase() {
+            return Mockito.mock(SearchUsersUseCase.class);
         }
     }
 }

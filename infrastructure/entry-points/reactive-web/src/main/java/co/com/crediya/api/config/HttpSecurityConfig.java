@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
@@ -41,7 +42,8 @@ public class HttpSecurityConfig {
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers(this.userPath.getLogin()).permitAll()
-                        .pathMatchers(this.userPath.getRegister()).hasAnyRole("ADMIN", "ADVISOR")
+                        .pathMatchers(HttpMethod.POST, this.userPath.getRegister()).hasAnyRole("ADMIN", "ADVISOR")
+                        .pathMatchers(HttpMethod.GET, this.userPath.getSearch()).hasAnyRole("ADMIN", "ADVISOR", "APPLICANT")
                         .anyExchange().authenticated()
                 )
                 .addFilterAt(jwtAuthFilter, SecurityWebFiltersOrder.AUTHENTICATION)

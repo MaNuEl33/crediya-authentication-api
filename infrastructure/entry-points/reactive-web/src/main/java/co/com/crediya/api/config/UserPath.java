@@ -10,4 +10,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class UserPath {
     private String register;
     private String login;
+    private String search;
 }

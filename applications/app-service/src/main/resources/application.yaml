@@ -30,6 +30,7 @@ routes:
     user:
       register: "/api/v1/usuarios"
       login: "/api/v1/login"
+      search: "/api/v1/usuarios"
 
 management:
   endpoints:

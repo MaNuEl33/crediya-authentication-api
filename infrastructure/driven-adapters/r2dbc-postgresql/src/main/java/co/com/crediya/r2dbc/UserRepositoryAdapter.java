@@ -2,12 +2,16 @@ package co.com.crediya.r2dbc;
 
 import co.com.crediya.model.user.User;
 import co.com.crediya.model.user.gateways.UserRepository;
+import co.com.crediya.model.user.valueobjects.UserSearchCriteria;
 import co.com.crediya.r2dbc.mappers.UserEntityMapper;
 import co.com.crediya.r2dbc.repositories.UserReactiveRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Objects;
 
 @Repository
 @Log4j2
@@ -42,5 +46,23 @@ public class UserRepositoryAdapter implements UserRepository {
                 .doFirst(() -> log.info("Finding user by email in the database."))
                 .doOnSuccess(u -> log.info("User found in the database."))
                 .doOnError(err -> log.error("Error finding the user in the database.", err));
+    }
+
+    @Override
+    public Flux<User> searchUsers(UserSearchCriteria criteria) {
+        if (Objects.isNull(criteria) || Objects.isNull(criteria.email()) || criteria.email().isBlank()) {
+            return this.reactiveRepository.findAll()
+                    .map(this.entityMapper::toUserModel)
+                    .doFirst(() -> log.info("Searching users in the database."))
+                    .doOnComplete(() -> log.info("Successful user search in the database."))
+                    .doOnError(err -> log.error("Error searching users in the database.", err));
+        }
+
+        return this.reactiveRepository.findByEmail(criteria.email())
+                .flux()
+                .map(this.entityMapper::toUserModel)
+                .doFirst(() -> log.info("Searching users in the database."))
+                .doOnComplete(() -> log.info("Successful user search in the database."))
+                .doOnError(err -> log.error("Error searching users in the database.", err));
     }
 }

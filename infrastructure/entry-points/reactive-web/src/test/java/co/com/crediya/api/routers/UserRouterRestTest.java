@@ -5,13 +5,16 @@ import co.com.crediya.api.dtos.RegisterUserRequestDto;
 import co.com.crediya.api.dtos.RegisterUserResponseDto;
 import co.com.crediya.api.handlers.LoginUserHandler;
 import co.com.crediya.api.handlers.RegisterUserHandler;
+import co.com.crediya.api.handlers.SearchUsersHandler;
 import co.com.crediya.api.mappers.LoginUserDtoMapper;
 import co.com.crediya.api.mappers.RegisterUserDtoMapper;
+import co.com.crediya.api.mappers.SearchUsersDtoMapper;
 import co.com.crediya.model.user.User;
 import co.com.crediya.usecase.registeruser.RegisterUserUseCase;
 import co.com.crediya.model.role.exceptions.RoleNotFoundException;
 import co.com.crediya.model.user.exceptions.UserDuplicateEmailException;
 import co.com.crediya.model.user.exceptions.UserRegistrationInvalidDataException;
+import co.com.crediya.usecase.searchusers.SearchUsersUseCase;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +31,7 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 
-@ContextConfiguration(classes = {UserRouterRest.class, RegisterUserHandler.class, LoginUserHandler.class})
+@ContextConfiguration(classes = {UserRouterRest.class, RegisterUserHandler.class, LoginUserHandler.class, SearchUsersHandler.class})
 @EnableConfigurationProperties(UserPath.class)
 @WebFluxTest(excludeAutoConfiguration = ReactiveSecurityAutoConfiguration.class)
 @ActiveProfiles("test")
@@ -55,6 +58,12 @@ class UserRouterRestTest {
 
     @MockitoBean
     private LoginUserDtoMapper loginUserDtoMapper;
+
+    @MockitoBean
+    private SearchUsersUseCase searchUsersUseCase;
+
+    @MockitoBean
+    private SearchUsersDtoMapper searchUsersDtoMapper;
 
     @Test
     void shouldRegisterUserSuccessfully() {
